@@ -52,7 +52,7 @@ export default function SignupPage() {
       }
     } catch (error) {
       setServerError(
-        error?.response?.data?.message ||
+        getErrorMessage(error) ||
           "Signup failed"
       );
     }

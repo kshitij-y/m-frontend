@@ -47,7 +47,7 @@ export default function LoginPage() {
       }
     } catch (error) {
       setServerError(
-        error?.response?.data?.message ||
+        getErrorMessage(error) ||
           "Login failed"
       );
     }

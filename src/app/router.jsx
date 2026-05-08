@@ -19,9 +19,14 @@ import MentorsPage from "../pages/mentee/MentorsPage";
 import MentorProfilePage from "../pages/mentee/MentorProfilePage";
 import MentorshipsPage from "../pages/mentee/MentorshipsPage";
 import ProfilePage from "../pages/mentee/ProfilePage";
+import PlansPage from "../pages/mentor/PlansPage";
+import MentorProfile from "../pages/mentor/ProfilePage"
+import BookingsPage from "../pages/mentor/BookingsPage";
+import RouteErrorBoundary from "../routes/RouteErrorBoundary";
 
 export const router = createBrowserRouter([
   {
+    errorElement: <RouteErrorBoundary />,
     element: <PublicRoute />,
     children: [
       {
@@ -78,6 +83,17 @@ export const router = createBrowserRouter([
               {
                 path: "/mentor/dashboard",
                 element: <MentorDashboardPage />,
+              },
+              {
+                path: "/mentor/profile",
+                element: <MentorProfile />,
+              },
+              {
+                path: "/mentor/plans",
+                element: <PlansPage />,
+              }, {
+                path: "/mentor/bookings",
+                element: <BookingsPage />,
               },
             ],
           },
