@@ -1,19 +1,32 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+// src/features/mentors/hooks/useDeletePlan.js
+
+import {
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 import toast from "react-hot-toast";
 
-import { deletePlan } from "../api/deletePlan";
+import { deletePlanApi } from "../api/plans";
 
-export function useDeletePlan() {
+import { queryKeys } from "../../../query/queryKeys";
+
+export const useDeletePlan = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: deletePlan,
+    mutationFn: deletePlanApi,
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["mentor-plans"],
+        queryKey:
+          queryKeys.mentors.myPlans,
       });
+
+      // queryClient.invalidateQueries({
+      //   queryKey:
+      //     queryKeys.onboarding.status,
+      // });
 
       toast.success("Plan deleted");
     },
@@ -24,4 +37,4 @@ export function useDeletePlan() {
       );
     },
   });
-}
+};

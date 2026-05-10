@@ -1,119 +1,147 @@
+// src/pages/mentor/ProfilePage.jsx
+
 import { useEffect } from "react";
-
 import { useForm } from "react-hook-form";
-
-import Spinner from "../../components/ui/Spinner";
-import EmptyState from "../../components/ui/EmptyState";
+import toast from "react-hot-toast";
 
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
-import Card from "../../components/ui/Card";
 
 import { useMyMentorProfile } from "../../features/mentors/hooks/useMyMentorProfile";
-
 import { useUpdateMentorProfile } from "../../features/mentors/hooks/useUpdateMentorProfile";
-import ExpertiseSection from "../../features/mentors/components/ExpertiseSection";
 
-export default function ProfilePage() {
-    const {
-        data: profile,
-        isLoading,
-        isError,
-    } = useMyMentorProfile();
+export default function ProfilePage({
+  embedded = false,
+  onSuccess,
+}) {
+  const { data, isLoading } = useMyMentorProfile();
 
-    const {
-        mutateAsync: updateProfile,
-        isPending,
-    } = useUpdateMentorProfile();
+  const { mutateAsync, isPending } =
+    useUpdateMentorProfile();
 
-    const {
-        register,
-        handleSubmit,
-        reset,
-    } = useForm();
+  const profile = data?.mentorProfile;
 
-    useEffect(() => {
-        if (profile) {
-            reset({
-                headline:
-                    profile.headline || "",
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      headline: "",
+      about: "",
+      experienceYears: "",
+    },
+  });
 
-                about:
-                    profile.about || "",
-            });
-        }
-    }, [profile, reset]);
-
-    const onSubmit = async (values) => {
-        await updateProfile(values);
-    };
-
-    if (isLoading) {
-        return <Spinner />;
+  useEffect(() => {
+    if (profile) {
+      reset({
+        headline: profile.headline || "",
+        about: profile.about || "",
+        experienceYears:
+          profile.experienceYears || "",
+      });
     }
+  }, [profile, reset]);
 
-    if (isError) {
-        return (
-            <EmptyState
-                title="Failed to load profile"
-                description="Please try again later."
-            />
-        );
+  const onSubmit = async (values) => {
+    try {
+      await mutateAsync({
+        headline: values.headline,
+        about: values.about,
+        experienceYears: Number(
+          values.experienceYears
+        ),
+      });
+
+      toast.success("Profile updated");
+
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (error) {
+      toast.error("Failed to update profile");
     }
+  };
 
+  if (isLoading) {
     return (
-        <div className="mx-auto max-w-4xl space-y-6">
-            <Card>
-                <div className="mb-8">
-                    <h1 className="text-4xl font-bold tracking-tight">
-                        Mentor Profile
-                    </h1>
-
-                    <p className="mt-2 text-gray-500">
-                        Set up your mentor identity.
-                    </p>
-                </div>
-
-                <form
-                    onSubmit={handleSubmit(onSubmit)}
-                    className="space-y-6"
-                >
-                    <Input
-                        label="Headline"
-                        placeholder="Senior Software Engineer"
-                        {...register("headline")}
-                    />
-
-                    <div className="space-y-2">
-                        <label className="text-sm font-medium">
-                            About
-                        </label>
-
-                        <textarea
-                            rows={4}
-                            className="
-                w-full rounded-xl border border-gray-300 px-4 py-3 outline-none
-
-                focus:border-black
-              "
-                            placeholder="Tell mentees about yourself..."
-                            {...register("about")}
-                        />
-                    </div>
-
-                    <Button
-                        type="submit"
-                        disabled={isPending}
-                    >
-                        {isPending
-                            ? "Saving..."
-                            : "Save Profile"}
-                    </Button>
-                </form>
-                <ExpertiseSection
-                    expertise={profile?.expertise || []}
-                />
-            </Card>
-        </div>
+      <p className="text-sm text-slate-500">
+        Loading profile...
+      </p>
     );
+  }
+
+  return (
+    <div className={embedded ? "" : "space-y-8"}>
+      {!embedded && (
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+            Mentor Profile
+          </h1>
+
+          <p className="mt-2 text-slate-500">
+            Manage your mentor profile.
+          </p>
+        </div>
+      )}
+
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="space-y-6"
+      >
+        <Input
+          label="Headline"
+          placeholder="Senior Frontend Engineer"
+          error={errors.headline?.message}
+          {...register("headline", {
+            required: "Headline is required",
+          })}
+        />
+
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-700">
+            About
+          </label>
+
+          <textarea
+            rows={5}
+            placeholder="Tell students about your experience"
+            className="w-full rounded-2xl border border-slate-200 px-4 py-3 outline-none transition focus:border-indigo-500"
+            {...register("about", {
+              required: "About is required",
+            })}
+          />
+
+          {errors.about && (
+            <p className="mt-2 text-sm text-rose-500">
+              {errors.about.message}
+            </p>
+          )}
+        </div>
+
+        <Input
+          type="number"
+          label="Years of Experience"
+          placeholder="5"
+          error={errors.experienceYears?.message}
+          {...register("experienceYears", {
+            required:
+              "Experience is required",
+          })}
+        />
+
+        <Button
+          type="submit"
+          disabled={isPending}
+          className="h-12 w-full rounded-2xl bg-indigo-600 text-white hover:bg-indigo-700"
+        >
+          {isPending
+            ? "Saving..."
+            : "Save & Continue"}
+        </Button>
+      </form>
+    </div>
+  );
 }

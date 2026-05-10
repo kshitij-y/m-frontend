@@ -14,6 +14,9 @@ import { loginSchema } from "../../features/auth/schemas/loginSchema";
 
 import { loginUser } from "../../features/auth/api/loginUser";
 import { getCurrentUser } from "../../features/auth/api/getCurrentUser";
+// import { useFetchOnboardingStatus } from "../../features/onboarding/onboardingHooks";
+
+import { useOnboarding } from "../../features/mentors/hooks/useOnboarding";
 
 import { setUser } from "../../redux/auth/authSlice";
 
@@ -22,6 +25,7 @@ import { getErrorMessage } from "../../utils/getErrorMessage";
 export default function LoginPage() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { fetchStatus } = useOnboarding();
 
   const [serverError, setServerError] = useState("");
 
@@ -44,7 +48,12 @@ export default function LoginPage() {
       dispatch(setUser(response.data));
 
       if (response.data.role === "MENTOR") {
-        if (!response.data.onboardingCompleted) {
+        const status = await fetchStatus(response.data);
+        const isComplete =
+          status?.completed ??
+          response.data.onboardingCompleted;
+
+        if (!isComplete) {
           navigate("/mentor/onboarding");
         } else {
           navigate("/mentor/dashboard");

@@ -1,16 +1,20 @@
+// src/features/mentors/hooks/useMyPlans.js
+
 import { useQuery } from "@tanstack/react-query";
 
-import { getMyPlans } from "../api/getMyPlans";
+import { getMyPlansApi } from "../api/plans";
 
-export function useMyPlans() {
+import { queryKeys } from "../../../query/queryKeys";
+
+export const useMyPlans = () => {
   return useQuery({
-    queryKey: ["mentor-plans"],
+    queryKey: queryKeys.mentors.myPlans,
 
     queryFn: async () => {
       const response =
-        await getMyPlans();
+        await getMyPlansApi();
 
-      return response.data;
+      return response.data || [];
     },
   });
-}
+};

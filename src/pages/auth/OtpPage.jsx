@@ -36,12 +36,12 @@ export default function OtpPage() {
   } = useForm();
 
   useEffect(() => {
-  if (!email || !purpose) {
-    navigate("/signup", {
-      replace: true,
-    });
-  }
-}, [email, purpose, navigate]);
+    if (!email || !purpose) {
+      navigate("/signup", {
+        replace: true,
+      });
+    }
+  }, [email, purpose, navigate]);
 
   const onSubmit = async (values) => {
     try {
@@ -71,6 +71,7 @@ export default function OtpPage() {
         return;
       }
 
+      // RESET PASSWORD FLOW
       if (purpose === "reset-password") {
         navigate("/reset-password", {
           state: {

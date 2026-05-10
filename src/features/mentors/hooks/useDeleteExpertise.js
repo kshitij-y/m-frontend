@@ -1,19 +1,32 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+// src/features/mentors/hooks/useDeleteExpertise.js
+
+import {
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 import toast from "react-hot-toast";
 
-import { deleteExpertise } from "../api/deleteExpertise";
+import { deleteExpertiseApi } from "../api/expertise";
 
-export function useDeleteExpertise() {
+import { queryKeys } from "../../../query/queryKeys";
+
+export const useDeleteExpertise = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: deleteExpertise,
+    mutationFn: deleteExpertiseApi,
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["mentor-profile"],
+        queryKey:
+          queryKeys.mentors.expertise,
       });
+
+      // queryClient.invalidateQueries({
+      //   queryKey:
+      //     queryKeys.onboarding.status,
+      // });
 
       toast.success(
         "Expertise removed"
@@ -26,4 +39,4 @@ export function useDeleteExpertise() {
       );
     },
   });
-}
+};

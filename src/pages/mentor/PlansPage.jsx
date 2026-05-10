@@ -1,190 +1,151 @@
-import { useForm } from "react-hook-form";
+// src/pages/mentor/PlansPage.jsx
 
-import Spinner from "../../components/ui/Spinner";
-import EmptyState from "../../components/ui/EmptyState";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
-import Card from "../../components/ui/Card";
 
-import MentorPlanCard from "../../features/mentors/components/MentorPlanCard";
+import PlanCard from "../../features/mentors/components/PlanCard";
 
 import { useMyPlans } from "../../features/mentors/hooks/useMyPlans";
-
 import { useCreatePlan } from "../../features/mentors/hooks/useCreatePlan";
-
 import { useDeletePlan } from "../../features/mentors/hooks/useDeletePlan";
-const PLAN_OPTIONS = [
-  {
-    value: "THREE_MONTH",
-    label: "3 Months",
-    title: "3 Month Mentorship",
-  },
 
-  {
-    value: "SIX_MONTH",
-    label: "6 Months",
-    title: "6 Month Mentorship",
-  },
-
-  {
-    value: "TWELVE_MONTH",
-    label: "12 Months",
-    title: "12 Month Mentorship",
-  },
+const durations = [
+  "THREE_MONTH",
+  "SIX_MONTH",
+  "TWELVE_MONTH",
 ];
 
-export default function PlansPage() {
-  const {
-    data: plans,
-    isLoading,
-    isError,
-  } = useMyPlans();
+export default function PlansPage({
+  embedded = false,
+  requireAllPlans = false,
+  onSuccess,
+}) {
+  const { data } = useMyPlans();
 
-  const {
-    mutateAsync: createPlan,
-    isPending: createPending,
-  } = useCreatePlan();
+  const plans = data?.plans || [];
 
-  const {
-    mutateAsync: deletePlan,
-    isPending: deletePending,
-  } = useDeletePlan();
+  const { mutateAsync, isPending } =
+    useCreatePlan();
+
+  const { mutate: deletePlan } =
+    useDeletePlan();
 
   const {
     register,
     handleSubmit,
     reset,
-    watch,
+    formState: { errors },
   } = useForm({
     defaultValues: {
-      durationType: "THREE_MONTH",
+      duration: "THREE_MONTHS",
+      price: "",
     },
   });
 
-  const selectedDuration =
-    watch("durationType");
-
   const onSubmit = async (values) => {
-    const selectedPlan =
-      PLAN_OPTIONS.find(
-        (item) =>
-          item.value === values.durationType
-      );
+    try {
+      await mutateAsync({
+        duration: values.duration,
+        price: Number(values.price),
+      });
 
-    await createPlan({
-      duration: values.durationType,
+      toast.success("Plan created");
 
-      title: selectedPlan.title,
+      reset();
 
-      // description:
-      // selectedPlan.description,
-
-      price: Number(values.price),
-    });
-
-    reset({
-      durationType: "THREE_MONTH",
-      price: "",
-    });
+      if (onSuccess) {
+        onSuccess();
+      }
+    } catch (error) {
+      toast.error("Failed to create plan");
+    }
   };
 
-  if (isLoading) {
-    return <Spinner />;
-  }
-
-  if (isError) {
-    return (
-      <EmptyState
-        title="Failed to load plans"
-        description="Please try again later."
-      />
-    );
-  }
-
   return (
-    <div className="mx-auto max-w-6xl space-y-8">
-      <Card>
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold tracking-tight">
+    <div className={embedded ? "" : "space-y-8"}>
+      {!embedded && (
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
             Mentorship Plans
           </h1>
 
-          <p className="mt-2 text-gray-500">
+          <p className="mt-2 text-slate-500">
             Configure your mentorship pricing.
           </p>
         </div>
+      )}
 
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="grid gap-6"
-        >
-          <div className="space-y-2">
-            <label className="text-sm font-medium">
-              Plan Duration
-            </label>
-
-            <select
-              className="
-                w-full rounded-xl border border-gray-300
-                px-4 py-3 outline-none
-
-                focus:border-black
-              "
-              {...register("durationType")}
-            >
-              {PLAN_OPTIONS.map((option) => (
-                <option
-                  key={option.value}
-                  value={option.value}
-                >
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* 
-            Future backend-driven description support
-            
-            <textarea />
-          */}
-
-          <Input
-            label="Price"
-            type="number"
-            placeholder="4999"
-            {...register("price")}
-          />
-
-          <Button
-            type="submit"
-            disabled={createPending}
-          >
-            {createPending
-              ? "Creating..."
-              : "Create Plan"}
-          </Button>
-        </form>
-      </Card>
-
-      {!plans || plans.length === 0 ? (
-        <EmptyState
-          title="No plans created"
-          description="Create your mentorship plans."
-        />
-      ) : (
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          {plans.map((plan) => (
-            <MentorPlanCard
-              key={plan.id}
-              plan={plan}
-              isDeleting={deletePending}
-              onDelete={deletePlan}
-            />
-          ))}
+      {requireAllPlans && (
+        <div className="rounded-2xl border border-indigo-100 bg-indigo-50 px-4 py-3 text-sm text-indigo-700">
+          Create atleast one mentorship plans to continue onboarding.
         </div>
       )}
+
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="space-y-6"
+      >
+        <div>
+          <label className="mb-2 block text-sm font-medium text-slate-700">
+            Plan Duration
+          </label>
+
+          <select
+            className="h-12 w-full rounded-2xl border border-slate-200 px-4 outline-none focus:border-indigo-500"
+            {...register("duration")}
+          >
+            {durations.map((duration) => (
+              <option
+                key={duration}
+                value={duration}
+              >
+                {duration.replaceAll("_", " ")}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <Input
+          type="number"
+          label="Price"
+          placeholder="4999"
+          error={errors.price?.message}
+          {...register("price", {
+            required: "Price is required",
+          })}
+        />
+
+        <Button
+          type="submit"
+          disabled={isPending}
+          className="h-12 w-full rounded-2xl bg-indigo-600 text-white hover:bg-indigo-700"
+        >
+          {isPending
+            ? "Creating..."
+            : "Create Plan"}
+        </Button>
+      </form>
+
+      <div className="mt-10 space-y-4">
+        {plans.length > 0 ? (
+          plans.map((plan) => (
+            <PlanCard
+              key={plan.id}
+              plan={plan}
+              onDelete={() =>
+                deletePlan(plan.id)
+              }
+            />
+          ))
+        ) : (
+          <p className="text-sm text-slate-500">
+            No plans created yet.
+          </p>
+        )}
+      </div>
     </div>
   );
 }

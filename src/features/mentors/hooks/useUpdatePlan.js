@@ -1,4 +1,4 @@
-// src/features/mentors/hooks/useCreatePlan.js
+// src/features/mentors/hooks/useUpdatePlan.js
 
 import {
   useMutation,
@@ -7,15 +7,15 @@ import {
 
 import toast from "react-hot-toast";
 
-import { createPlanApi } from "../api/plans";
+import { updatePlanApi } from "../api/plans";
 
 import { queryKeys } from "../../../query/queryKeys";
 
-export const useCreatePlan = () => {
+export const useUpdatePlan = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: createPlanApi,
+    mutationFn: updatePlanApi,
 
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -28,12 +28,12 @@ export const useCreatePlan = () => {
           queryKeys.onboarding.status,
       });
 
-      toast.success("Plan created");
+      toast.success("Plan updated");
     },
 
     onError: () => {
       toast.error(
-        "Failed to create plan"
+        "Failed to update plan"
       );
     },
   });

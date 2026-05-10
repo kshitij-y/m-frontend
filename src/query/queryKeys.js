@@ -3,6 +3,10 @@ export const queryKeys = {
     me: ["auth", "me"],
   },
 
+  onboarding: {
+    status: ["onboarding", "status"],
+  },
+
   mentors: {
     all: ["mentors"],
     detail: (id) => ["mentor", id],
@@ -13,5 +17,8 @@ export const queryKeys = {
     all: ["mentorships"],
     my: ["my-mentorships"],
     detail: (id) => ["mentorship", id],
+  },
+  calendar: {
+    status: ["calendar", "status"],
   },
 };

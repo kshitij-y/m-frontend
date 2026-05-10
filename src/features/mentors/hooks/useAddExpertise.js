@@ -1,18 +1,31 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+// src/features/mentors/hooks/useAddExpertise.js
+
+import {
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 
 import toast from "react-hot-toast";
 
-import { addExpertise } from "../api/addExpertise";
+import { addExpertiseApi } from "../api/expertise";
 
-export function useAddExpertise() {
+import { queryKeys } from "../../../query/queryKeys";
+
+export const useAddExpertise = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: addExpertise,
+    mutationFn: addExpertiseApi,
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ["mentor-profile"],
+        queryKey:
+          queryKeys.mentors.expertise,
+      });
+
+      queryClient.invalidateQueries({
+        queryKey:
+          queryKeys.onboarding.status,
       });
 
       toast.success("Expertise added");
@@ -24,4 +37,4 @@ export function useAddExpertise() {
       );
     },
   });
-}
+};
