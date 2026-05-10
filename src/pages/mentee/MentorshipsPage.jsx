@@ -50,11 +50,11 @@ export default function MentorshipsPage() {
               <div className="flex items-start justify-between">
                 <div>
                   <h2 className="text-2xl font-bold">
-                    {item?.mentor?.name}
+                    {item?.mentorProfile?.user?.name}
                   </h2>
 
                   <p className="mt-2 text-gray-500">
-                    {item?.plan?.title}
+                    {item?.mentorPlan?.title}
                   </p>
                 </div>
 

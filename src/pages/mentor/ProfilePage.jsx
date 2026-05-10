@@ -38,8 +38,8 @@ export default function ProfilePage() {
                 headline:
                     profile.headline || "",
 
-                bio:
-                    profile.bio || "",
+                about:
+                    profile.about || "",
             });
         }
     }, [profile, reset]);
@@ -78,15 +78,15 @@ export default function ProfilePage() {
                     onSubmit={handleSubmit(onSubmit)}
                     className="space-y-6"
                 >
-                    {/* <Input
+                    <Input
                         label="Headline"
                         placeholder="Senior Software Engineer"
                         {...register("headline")}
-                    /> */}
+                    />
 
                     <div className="space-y-2">
                         <label className="text-sm font-medium">
-                            Bio
+                            About
                         </label>
 
                         <textarea
@@ -97,7 +97,7 @@ export default function ProfilePage() {
                 focus:border-black
               "
                             placeholder="Tell mentees about yourself..."
-                            {...register("bio")}
+                            {...register("about")}
                         />
                     </div>
 

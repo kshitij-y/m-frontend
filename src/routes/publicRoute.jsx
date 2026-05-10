@@ -8,6 +8,12 @@ export default function PublicRoute() {
 
   if (isAuthenticated) {
     if (user?.role === "MENTOR") {
+      if (!user?.onboardingCompleted) {
+        return (
+          <Navigate to="/mentor/onboarding" replace />
+        );
+      }
+
       return <Navigate to="/mentor/dashboard" replace />;
     }
 

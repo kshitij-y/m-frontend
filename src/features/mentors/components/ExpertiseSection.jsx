@@ -33,7 +33,7 @@ export default function ExpertiseSection() {
   } = useDeleteExpertise();
 
   const expertise =
-    profile?.expertises || [];
+    profile?.expertise || [];
 
   const handleAdd = async () => {
     if (!value.trim()) return;

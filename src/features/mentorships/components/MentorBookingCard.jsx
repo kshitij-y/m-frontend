@@ -14,7 +14,7 @@ export default function MentorBookingCard({
           </h2>
 
           <p className="mt-2 text-gray-500">
-            {mentorship?.plan?.title}
+            {mentorship?.mentorPlan?.title}
           </p>
 
           <div className="mt-4">
@@ -31,7 +31,7 @@ export default function MentorBookingCard({
               onClick={() =>
                 onStatusChange(
                   mentorship.id,
-                  "ACCEPTED"
+                      "ACTIVE"
                 )
               }
               className="bg-green-600 hover:bg-green-700"
@@ -44,7 +44,7 @@ export default function MentorBookingCard({
               onClick={() =>
                 onStatusChange(
                   mentorship.id,
-                  "REJECTED"
+                      "CANCELLED"
                 )
               }
               className="bg-red-600 hover:bg-red-700"

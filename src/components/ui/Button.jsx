@@ -4,9 +4,11 @@ export default function Button({
   children,
   className,
   variant = "primary",
+  type = "button",
   disabled = false,
   ...props
 }) {
+  console.log("SUBMIT CALLED BUTTON");
   return (
     <button
       disabled={disabled}

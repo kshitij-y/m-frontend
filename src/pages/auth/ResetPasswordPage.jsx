@@ -1,60 +1,56 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-
-import { useDispatch } from "react-redux";
 
 import Logo from "../../components/ui/Logo";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 
-import { loginSchema } from "../../features/auth/schemas/loginSchema";
-
-import { loginUser } from "../../features/auth/api/loginUser";
-import { getCurrentUser } from "../../features/auth/api/getCurrentUser";
-
-import { setUser } from "../../redux/auth/authSlice";
+import { resetPassword } from "../../features/auth/api/resetPassword";
 
 import { getErrorMessage } from "../../utils/getErrorMessage";
 
-export default function LoginPage() {
+export default function ResetPasswordPage() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
+  const location = useLocation();
 
   const [serverError, setServerError] = useState("");
+
+  const email = location.state?.email || "";
 
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm({
-    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      email,
+    },
   });
+
+  const password = watch("newPassword");
 
   const onSubmit = async (values) => {
     try {
       setServerError("");
 
-      await loginUser(values);
+      await resetPassword({
+        email: values.email,
+        otp: values.otp,
+        newPassword: values.newPassword,
+      });
 
-      const response = await getCurrentUser();
-
-      dispatch(setUser(response.data));
-
-      if (response.data.role === "MENTOR") {
-        if (!response.data.onboardingCompleted) {
-          navigate("/mentor/onboarding");
-        } else {
-          navigate("/mentor/dashboard");
-        }
-      } else {
-        navigate("/dashboard");
-      }
+      navigate("/login");
     } catch (error) {
       setServerError(
-        getErrorMessage(error) || "Login failed"
+        getErrorMessage(error) ||
+          "Password reset failed"
       );
     }
   };
@@ -79,16 +75,16 @@ export default function LoginPage() {
           <div>
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700">
               <span className="h-2 w-2 rounded-full bg-indigo-600" />
-              Welcome back
+              Secure account recovery
             </div>
 
             <h1 className="text-4xl font-bold tracking-tight text-slate-900">
-              Login to your account
+              Reset password
             </h1>
 
             <p className="mt-3 text-base leading-7 text-slate-600">
-              Continue your mentorship journey and connect with
-              mentors.
+              Enter the OTP sent to your email and create a new
+              password.
             </p>
           </div>
 
@@ -101,25 +97,47 @@ export default function LoginPage() {
               type="email"
               placeholder="Enter your email"
               error={errors.email?.message}
-              {...register("email")}
+              {...register("email", {
+                required: "Email is required",
+              })}
             />
 
             <Input
-              label="Password"
-              type="password"
-              placeholder="Enter your password"
-              error={errors.password?.message}
-              {...register("password")}
+              label="OTP Code"
+              placeholder="Enter 6-digit OTP"
+              error={errors.otp?.message}
+              {...register("otp", {
+                required: "OTP is required",
+              })}
             />
 
-            <div className="flex items-center justify-end">
-              <Link
-                to="/forgot-password"
-                className="text-sm font-medium text-indigo-600 transition hover:text-indigo-700"
-              >
-                Forgot password?
-              </Link>
-            </div>
+            <Input
+              label="New Password"
+              type="password"
+              placeholder="Create new password"
+              error={errors.newPassword?.message}
+              {...register("newPassword", {
+                required: "Password is required",
+                minLength: {
+                  value: 6,
+                  message:
+                    "Password must be at least 8 characters",
+                },
+              })}
+            />
+
+            <Input
+              label="Confirm Password"
+              type="password"
+              placeholder="Confirm new password"
+              error={errors.confirmPassword?.message}
+              {...register("confirmPassword", {
+                required: "Please confirm your password",
+                validate: (value) =>
+                  value === password ||
+                  "Passwords do not match",
+              })}
+            />
 
             {serverError && (
               <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
@@ -133,17 +151,17 @@ export default function LoginPage() {
               className="h-12 rounded-2xl bg-indigo-600 text-base font-semibold text-white transition hover:bg-indigo-700"
             >
               {isSubmitting
-                ? "Logging in..."
-                : "Login"}
+                ? "Resetting password..."
+                : "Reset Password"}
             </Button>
 
             <p className="text-center text-sm text-slate-500">
-              Don&apos;t have an account?{" "}
+              Back to{" "}
               <Link
-                to="/signup"
+                to="/login"
                 className="font-semibold text-indigo-600 hover:text-indigo-700"
               >
-                Create account
+                Login
               </Link>
             </p>
           </form>

@@ -21,12 +21,14 @@ export default function MentorCard({ mentor }) {
       </div>
 
       <p className="mt-5 line-clamp-3 text-sm text-gray-600">
-        {mentor?.mentorProfile?.bio ||
+        {mentor?.mentorProfile?.about ||
           "No bio available yet."}
       </p>
 
       <div className="mt-6 flex flex-wrap gap-2">
-        {mentor?.expertise?.slice(0, 3).map((item) => (
+        {mentor?.mentorProfile?.expertise
+          ?.slice(0, 3)
+          .map((item) => (
           <span
             key={item.id}
             className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600"

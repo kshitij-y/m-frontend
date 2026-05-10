@@ -1,60 +1,89 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+} from "react-router-dom";
 
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-
 import { useDispatch } from "react-redux";
 
 import Logo from "../../components/ui/Logo";
 import Input from "../../components/ui/Input";
 import Button from "../../components/ui/Button";
 
-import { loginSchema } from "../../features/auth/schemas/loginSchema";
-
-import { loginUser } from "../../features/auth/api/loginUser";
+import { verifySignupOtp } from "../../features/auth/api/verifySignupOtp";
 import { getCurrentUser } from "../../features/auth/api/getCurrentUser";
 
 import { setUser } from "../../redux/auth/authSlice";
 
 import { getErrorMessage } from "../../utils/getErrorMessage";
 
-export default function LoginPage() {
+export default function OtpPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const dispatch = useDispatch();
 
   const [serverError, setServerError] = useState("");
+
+  const email = location.state?.email;
+  const purpose = location.state?.purpose;
 
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm({
-    resolver: zodResolver(loginSchema),
-  });
+  } = useForm();
+
+  useEffect(() => {
+  if (!email || !purpose) {
+    navigate("/signup", {
+      replace: true,
+    });
+  }
+}, [email, purpose, navigate]);
 
   const onSubmit = async (values) => {
     try {
       setServerError("");
 
-      await loginUser(values);
+      // SIGNUP FLOW
+      if (purpose === "signup") {
+        await verifySignupOtp({
+          email,
+          otp: values.otp,
+        });
 
-      const response = await getCurrentUser();
+        const response = await getCurrentUser();
 
-      dispatch(setUser(response.data));
+        dispatch(setUser(response.data));
 
-      if (response.data.role === "MENTOR") {
-        if (!response.data.onboardingCompleted) {
-          navigate("/mentor/onboarding");
+        if (response.data.role === "MENTOR") {
+          if (!response.data.onboardingCompleted) {
+            navigate("/mentor/onboarding");
+          } else {
+            navigate("/mentor/dashboard");
+          }
         } else {
-          navigate("/mentor/dashboard");
+          navigate("/dashboard");
         }
-      } else {
-        navigate("/dashboard");
+
+        return;
+      }
+
+      if (purpose === "reset-password") {
+        navigate("/reset-password", {
+          state: {
+            email,
+            otp: values.otp,
+          },
+        });
+
+        return;
       }
     } catch (error) {
       setServerError(
-        getErrorMessage(error) || "Login failed"
+        getErrorMessage(error) || "OTP verification failed"
       );
     }
   };
@@ -79,16 +108,19 @@ export default function LoginPage() {
           <div>
             <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700">
               <span className="h-2 w-2 rounded-full bg-indigo-600" />
-              Welcome back
+              Verification required
             </div>
 
             <h1 className="text-4xl font-bold tracking-tight text-slate-900">
-              Login to your account
+              Verify OTP
             </h1>
 
             <p className="mt-3 text-base leading-7 text-slate-600">
-              Continue your mentorship journey and connect with
-              mentors.
+              Enter the 6-digit verification code sent to:
+            </p>
+
+            <p className="mt-2 font-semibold text-slate-900">
+              {email}
             </p>
           </div>
 
@@ -97,29 +129,17 @@ export default function LoginPage() {
             className="mt-10 space-y-6"
           >
             <Input
-              label="Email Address"
-              type="email"
-              placeholder="Enter your email"
-              error={errors.email?.message}
-              {...register("email")}
+              label="Verification Code"
+              placeholder="Enter 6-digit OTP"
+              error={errors.otp?.message}
+              {...register("otp", {
+                required: "OTP is required",
+                minLength: {
+                  value: 6,
+                  message: "OTP must be 6 digits",
+                },
+              })}
             />
-
-            <Input
-              label="Password"
-              type="password"
-              placeholder="Enter your password"
-              error={errors.password?.message}
-              {...register("password")}
-            />
-
-            <div className="flex items-center justify-end">
-              <Link
-                to="/forgot-password"
-                className="text-sm font-medium text-indigo-600 transition hover:text-indigo-700"
-              >
-                Forgot password?
-              </Link>
-            </div>
 
             {serverError && (
               <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-600">
@@ -133,17 +153,17 @@ export default function LoginPage() {
               className="h-12 rounded-2xl bg-indigo-600 text-base font-semibold text-white transition hover:bg-indigo-700"
             >
               {isSubmitting
-                ? "Logging in..."
-                : "Login"}
+                ? "Verifying..."
+                : "Verify OTP"}
             </Button>
 
             <p className="text-center text-sm text-slate-500">
-              Don&apos;t have an account?{" "}
+              Wrong email?{" "}
               <Link
                 to="/signup"
                 className="font-semibold text-indigo-600 hover:text-indigo-700"
               >
-                Create account
+                Go back
               </Link>
             </p>
           </form>

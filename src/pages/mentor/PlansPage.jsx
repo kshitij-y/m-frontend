@@ -73,7 +73,7 @@ export default function PlansPage() {
       );
 
     await createPlan({
-      plan: values.durationType,
+      duration: values.durationType,
 
       title: selectedPlan.title,
 

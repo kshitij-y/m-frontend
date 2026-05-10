@@ -5,9 +5,9 @@ import App from './App.jsx'
 import Providers from './app/providers.jsx'
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  // <StrictMode>
     <Providers>
       <App />
     </Providers>
-  </StrictMode>,
+  // </StrictMode>,
 )

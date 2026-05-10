@@ -73,11 +73,11 @@ export default function DashboardPage() {
             className="rounded-2xl border border-gray-100 p-4"
           >
             <p className="font-semibold">
-              {item?.mentor?.name}
+              {item?.mentorProfile?.user?.name}
             </p>
 
             <p className="mt-1 text-sm text-gray-500">
-              {item?.plan?.title}
+              {item?.mentorPlan?.title}
             </p>
 
             <p className="mt-2 text-xs text-gray-400">

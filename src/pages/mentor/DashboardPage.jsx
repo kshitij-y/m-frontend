@@ -30,10 +30,10 @@ export default function DashboardPage() {
         item.status === "PENDING"
     ).length || 0;
 
-  const acceptedCount =
+  const activeCount =
     mentorships?.filter(
       (item) =>
-        item.status === "ACCEPTED"
+        item.status === "ACTIVE"
     ).length || 0;
 
   return (
@@ -66,7 +66,7 @@ export default function DashboardPage() {
 
         <StatCard
           title="Active Mentorships"
-          value={acceptedCount}
+          value={activeCount}
         />
       </section>
 

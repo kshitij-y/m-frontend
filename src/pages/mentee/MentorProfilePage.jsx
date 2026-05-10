@@ -60,12 +60,12 @@ export default function MentorProfilePage() {
             </p>
 
             <p className="mt-5 max-w-3xl text-gray-600">
-              {mentor?.mentorProfile?.bio ||
+              {mentor?.mentorProfile?.about ||
                 "No bio available."}
             </p>
 
             <div className="mt-6 flex flex-wrap gap-2">
-              {mentor?.expertise?.map((item) => (
+              {mentor?.mentorProfile?.expertise?.map((item) => (
                 <span
                   key={item.id}
                   className="rounded-full bg-gray-100 px-4 py-2 text-sm text-gray-600"
