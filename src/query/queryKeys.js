@@ -21,4 +21,8 @@ export const queryKeys = {
   calendar: {
     status: ["calendar", "status"],
   },
+
+  chat: {
+    token: ["chat", "token"],
+  },
 };

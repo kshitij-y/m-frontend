@@ -17,7 +17,7 @@ export default function PublicRoute() {
       return <Navigate to="/mentor/dashboard" replace />;
     }
 
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/mentee/dashboard" replace />;
   }
 
   return <Outlet />;

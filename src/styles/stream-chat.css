@@ -1,0 +1,65 @@
+@import "stream-chat-react/dist/css/v2/index.css";
+
+:root {
+  --mentorconnect-chat-bg: #f8fafc;
+  --mentorconnect-chat-border: #e2e8f0;
+  --mentorconnect-chat-primary: #4f46e5;
+  --mentorconnect-chat-primary-strong: #4338ca;
+}
+
+.str-chat {
+  background: var(--mentorconnect-chat-bg);
+  font-family: Inter, sans-serif;
+  color: #0f172a;
+}
+
+.str-chat__channel-header {
+  border-bottom: 1px solid var(--mentorconnect-chat-border);
+  background: #ffffff;
+  padding: 12px 16px;
+}
+
+.str-chat__message-input {
+  border-top: 1px solid var(--mentorconnect-chat-border);
+  background: #ffffff;
+  padding: 12px 16px;
+}
+
+.str-chat__message-input textarea,
+.str-chat__message-input input {
+  border-radius: 12px;
+  border: 1px solid var(--mentorconnect-chat-border);
+  padding: 10px 12px;
+}
+
+.str-chat__message-input textarea:focus,
+.str-chat__message-input input:focus {
+  border-color: var(--mentorconnect-chat-primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+.str-chat__message-list {
+  background: #ffffff;
+}
+
+.str-chat__message-simple__content {
+  background: #f1f5f9;
+  border-radius: 16px;
+  padding: 10px 14px;
+}
+
+.str-chat__message-simple--me .str-chat__message-simple__content {
+  background: #e0e7ff;
+}
+
+.str-chat__message-simple__author {
+  color: #475569;
+}
+
+.str-chat__avatar-image {
+  border-radius: 14px;
+}
+
+.str-chat__send-button {
+  color: var(--mentorconnect-chat-primary-strong);
+}

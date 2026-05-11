@@ -59,13 +59,9 @@ export default function OtpPage() {
         dispatch(setUser(response.data));
 
         if (response.data.role === "MENTOR") {
-          if (!response.data.onboardingCompleted) {
-            navigate("/mentor/onboarding");
-          } else {
-            navigate("/mentor/dashboard");
-          }
+          navigate("/mentor/onboarding");
         } else {
-          navigate("/dashboard");
+          navigate("/mentee/dashboard");
         }
 
         return;

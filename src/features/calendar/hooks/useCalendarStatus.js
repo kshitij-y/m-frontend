@@ -4,9 +4,10 @@ import { getCalendarStatus } from "../api/getCalendarStatus";
 
 import { queryKeys } from "../../../query/queryKeys";
 
-export const useCalendarStatus = () => {
+export const useCalendarStatus = (options = {}) => {
   return useQuery({
     queryKey: queryKeys.calendar.status,
     queryFn: getCalendarStatus,
+    ...options,
   });
 };

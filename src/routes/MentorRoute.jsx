@@ -9,7 +9,7 @@ export default function MentorRoute() {
     location.pathname === "/mentor/onboarding";
 
   if (user?.role !== "MENTOR") {
-    return <Navigate to="/dashboard" replace />;
+    return <Navigate to="/mentee/dashboard" replace />;
   }
 
   if (!user?.onboardingCompleted && !isOnboardingPath) {

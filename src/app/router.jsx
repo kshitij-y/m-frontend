@@ -13,22 +13,24 @@ import OtpPage from "../pages/auth/OtpPage";
 import ForgetPasswordPage from "../pages/auth/ForgetPasswordPage";
 import ResetPasswordPage from "../pages/auth/ResetPasswordPage";
 
-import MenteeDashboardPage from "../pages/mentee/DashboardPage";
-import MentorDashboardPage from "../pages/mentor/DashboardPage";
+import MenteeDashboardPage from "../features/mentee/pages/DashboardPage";
+import MentorDetailsPage from "../features/mentee/pages/MentorDetailsPage";
+import MentorDashboardPage from "../features/mentor/pages/DashboardPage";
 
 import ProtectedRoute from "../routes/ProtectedRoute";
 import PublicRoute from "../routes/PublicRoute";
 import MentorRoute from "../routes/MentorRoute";
 import MenteeRoute from "../routes/MenteeRoute";
 
-import MentorsPage from "../pages/mentee/MentorsPage";
-import MentorProfilePage from "../pages/mentee/MentorProfilePage";
-import MentorshipsPage from "../pages/mentee/MentorshipsPage";
-import ProfilePage from "../pages/mentee/ProfilePage";
+import MentorsPage from "../features/mentee/pages/MentorsPage";
+import MentorshipsPage from "../features/mentee/pages/MentorshipsPage";
+import MenteeChatPage from "../features/mentee/pages/ChatPage";
+import MenteeAiMatchPage from "../features/mentee/pages/AiMatchPage";
+import MenteeProfilePage from "../features/mentee/pages/ProfilePage";
 
-import PlansPage from "../pages/mentor/PlansPage";
-import MentorProfile from "../pages/mentor/ProfilePage";
-import BookingsPage from "../pages/mentor/BookingsPage";
+import MentorSessionsPage from "../features/mentor/pages/SessionsPage";
+import MentorChatPage from "../features/mentor/pages/ChatPage";
+import MentorProfile from "../features/mentor/pages/ProfilePage";
 import MentorOnboardingPage from "../pages/mentor/OnboardingPage";
 
 import RouteErrorBoundary from "../routes/RouteErrorBoundary";
@@ -111,28 +113,38 @@ export const router = createBrowserRouter([
 
             children: [
               {
-                path: "/dashboard",
+                path: "/mentee/dashboard",
                 element: <MenteeDashboardPage />,
               },
 
               {
-                path: "/mentors",
+                path: "/mentee/mentors",
                 element: <MentorsPage />,
               },
 
               {
-                path: "/mentors/:id",
-                element: <MentorProfilePage />,
+                path: "/mentee/mentors/:mentorId",
+                element: <MentorDetailsPage />,
               },
 
               {
-                path: "/mentorships",
+                path: "/mentee/mentorships",
                 element: <MentorshipsPage />,
               },
 
               {
-                path: "/profile",
-                element: <ProfilePage />,
+                path: "/mentee/chat",
+                element: <MenteeChatPage />,
+              },
+
+              {
+                path: "/mentee/ai-match",
+                element: <MenteeAiMatchPage />,
+              },
+
+              {
+                path: "/mentee/profile",
+                element: <MenteeProfilePage />,
               },
             ],
           },
@@ -148,18 +160,18 @@ export const router = createBrowserRouter([
               },
 
               {
+                path: "/mentor/sessions",
+                element: <MentorSessionsPage />,
+              },
+
+              {
+                path: "/mentor/chat",
+                element: <MentorChatPage />,
+              },
+
+              {
                 path: "/mentor/profile",
                 element: <MentorProfile />,
-              },
-
-              {
-                path: "/mentor/plans",
-                element: <PlansPage />,
-              },
-
-              {
-                path: "/mentor/bookings",
-                element: <BookingsPage />,
               },
             ],
           },

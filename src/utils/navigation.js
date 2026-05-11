@@ -4,37 +4,44 @@ import {
   User,
   Brain,
   BookOpen,
-  ClipboardList,
+  MessageSquare,
+  CalendarDays,
 } from "lucide-react";
 
 export const menteeNavItems = [
   {
     title: "Dashboard",
-    path: "/dashboard",
+    path: "/mentee/dashboard",
     icon: LayoutDashboard,
   },
 
   {
     title: "Mentors",
-    path: "/mentors",
+    path: "/mentee/mentors",
     icon: Users,
   },
 
   {
     title: "Mentorships",
-    path: "/mentorships",
+    path: "/mentee/mentorships",
     icon: BookOpen,
   },
 
   {
-    title: "AI Assistant",
-    path: "/ai",
+    title: "Chat",
+    path: "/mentee/chat",
+    icon: MessageSquare,
+  },
+
+  {
+    title: "AI Match",
+    path: "/mentee/ai-match",
     icon: Brain,
   },
 
   {
     title: "Profile",
-    path: "/profile",
+    path: "/mentee/profile",
     icon: User,
   },
 ];
@@ -47,15 +54,15 @@ export const mentorNavItems = [
   },
 
   {
-    title: "Plans",
-    path: "/mentor/plans",
-    icon: ClipboardList,
+    title: "Sessions",
+    path: "/mentor/sessions",
+    icon: CalendarDays,
   },
 
   {
-    title: "Bookings",
-    path: "/mentor/bookings",
-    icon: BookOpen,
+    title: "Chat",
+    path: "/mentor/chat",
+    icon: MessageSquare,
   },
 
   {

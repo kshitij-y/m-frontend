@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 
 import { useCreateMentorship } from "./useCreateMentorship";
+import { getErrorMessage } from "../../../utils/getErrorMessage";
 
 export function useBookMentorship() {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ export function useBookMentorship() {
         "Mentorship booked successfully"
       );
 
-      navigate("/mentorships");
+      navigate("/mentee/mentorships");
     } catch (error) {
       toast.error(
         getErrorMessage(error) ||
