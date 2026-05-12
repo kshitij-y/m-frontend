@@ -27,10 +27,12 @@ import MentorshipsPage from "../features/mentee/pages/MentorshipsPage";
 import MenteeChatPage from "../features/mentee/pages/ChatPage";
 import MenteeAiMatchPage from "../features/mentee/pages/AiMatchPage";
 import MenteeProfilePage from "../features/mentee/pages/ProfilePage";
+import MenteeProfileEditPage from "../features/mentee/pages/ProfileEditPage";
 
 import MentorSessionsPage from "../features/mentor/pages/SessionsPage";
 import MentorChatPage from "../features/mentor/pages/ChatPage";
 import MentorProfile from "../features/mentor/pages/ProfilePage";
+import MentorProfileEditPage from "../features/mentor/pages/ProfileEditPage";
 import MentorOnboardingPage from "../pages/mentor/OnboardingPage";
 
 import RouteErrorBoundary from "../routes/RouteErrorBoundary";
@@ -146,6 +148,11 @@ export const router = createBrowserRouter([
                 path: "/mentee/profile",
                 element: <MenteeProfilePage />,
               },
+
+              {
+                path: "/mentee/profile/edit",
+                element: <MenteeProfileEditPage />,
+              },
             ],
           },
 
@@ -172,6 +179,11 @@ export const router = createBrowserRouter([
               {
                 path: "/mentor/profile",
                 element: <MentorProfile />,
+              },
+
+              {
+                path: "/mentor/profile/edit",
+                element: <MentorProfileEditPage />,
               },
             ],
           },

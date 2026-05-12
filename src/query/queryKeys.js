@@ -11,6 +11,8 @@ export const queryKeys = {
     all: ["mentors"],
     detail: (id) => ["mentor", id],
     plans: (id) => ["mentor-plans", id],
+    myPlans: ["mentor", "plans", "me"],
+    expertise: ["mentor", "expertise", "me"],
   },
 
   mentorships: {
