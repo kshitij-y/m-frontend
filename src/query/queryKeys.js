@@ -27,4 +27,18 @@ export const queryKeys = {
   chat: {
     token: ["chat", "token"],
   },
+
+  sessions: {
+    all: ["sessions"],
+
+    upcoming: ["sessions", "upcoming"],
+    history: ["sessions", "history"],
+    mentees: ["sessions", "mentor-mentees"],
+
+    byMentorship: (mentorshipId) => [
+      "sessions",
+      "mentorship",
+      mentorshipId,
+    ],
+  },
 };

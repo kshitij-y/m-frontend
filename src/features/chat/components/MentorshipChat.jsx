@@ -266,7 +266,7 @@ export default function MentorshipChat({
 
             <div className="space-y-2">
               {!mentorships?.length &&
-              !isMentorshipsLoading ? (
+                !isMentorshipsLoading ? (
                 <div className="rounded-2xl border border-dashed border-slate-200 bg-white p-4 text-sm text-slate-500">
                   No mentorships yet.
                 </div>
@@ -285,15 +285,15 @@ export default function MentorshipChat({
 
                     const channel =
                       channelLookup[
-                        channelId
+                      channelId
                       ];
 
                     const lastMessage =
                       channel
                         ?.state.messages?.[
-                        channel.state
-                          .messages.length -
-                          1
+                      channel.state
+                        .messages.length -
+                      1
                       ];
 
                     const unreadCount =
@@ -316,11 +316,10 @@ export default function MentorshipChat({
                             mentorship
                           )
                         }
-                        className={`flex w-full items-center gap-3 rounded-2xl border px-3 py-3 text-left transition-all duration-200 ${
-                          isActive
+                        className={`flex w-full items-center gap-3 rounded-2xl border px-3 py-3 text-left transition-all duration-200 ${isActive
                             ? "border-indigo-100 bg-indigo-50/60 shadow-sm"
                             : "border-transparent hover:border-slate-200 hover:bg-slate-50"
-                        }`}
+                          }`}
                       >
                         {counterpart.avatar ? (
                           <img
@@ -350,12 +349,12 @@ export default function MentorshipChat({
 
                             {unreadCount >
                               0 && (
-                              <span className="ml-2 rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 px-2 py-0.5 text-xs font-semibold text-white shadow-sm">
-                                {
-                                  unreadCount
-                                }
-                              </span>
-                            )}
+                                <span className="ml-2 rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 px-2 py-0.5 text-xs font-semibold text-white shadow-sm">
+                                  {
+                                    unreadCount
+                                  }
+                                </span>
+                              )}
                           </div>
 
                           <p className="mt-0.5 truncate text-xs text-slate-500">
@@ -373,7 +372,7 @@ export default function MentorshipChat({
 
           <section className="flex min-h-[620px] flex-col bg-white">
             {!clientReady ||
-            isTokenLoading ? (
+              isTokenLoading ? (
               <div className="flex flex-1 items-center justify-center text-sm text-slate-500">
                 Connecting chat...
               </div>

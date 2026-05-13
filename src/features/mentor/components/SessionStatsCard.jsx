@@ -3,6 +3,7 @@ export default function SessionStatsCard({
   value,
   helper,
 }) {
+
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
       <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">

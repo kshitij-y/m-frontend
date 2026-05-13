@@ -2,6 +2,7 @@ import Spinner from "../../components/ui/Spinner";
 import EmptyState from "../../components/ui/EmptyState";
 
 import { useMyMentorships } from "../../features/mentorships/hooks/useMyMentorships";
+import MentorshipSessionList from "../../features/sessions/components/MentorshipSessionList";
 
 export default function MentorshipsPage() {
   const {
@@ -62,6 +63,12 @@ export default function MentorshipsPage() {
                   {item.status}
                 </span>
               </div>
+
+              <MentorshipSessionList
+                mentorshipId={item.id}
+                mentorshipStatus={item.status}
+                userRole="MENTEE"
+              />
             </div>
           ))}
         </div>

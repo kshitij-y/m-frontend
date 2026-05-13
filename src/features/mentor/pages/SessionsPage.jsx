@@ -1,30 +1,81 @@
 import { useMemo, useState } from "react";
-import toast from "react-hot-toast";
-
 import {
   CalendarDays,
+  CheckCircle2,
   Clock3,
   Users,
-  CheckCircle2,
 } from "lucide-react";
 
 import SessionStatsCard from "../components/SessionStatsCard";
-import MentorshipRequestCard from "../components/MentorshipRequestCard";
-import SessionCard from "../components/SessionCard";
 import EmptySessionsState from "../components/EmptySessionsState";
 
-import ScheduleSessionModal from "../components/ScheduleSessionModal";
-import RescheduleSessionModal from "../components/RescheduleSessionModal";
-import RejectRequestModal from "../components/RejectRequestModal";
+import SessionCard from "../../sessions/components/SessionCard";
+import ScheduleSessionModal from "../../sessions/components/ScheduleSessionModal";
+import RescheduleSessionModal from "../../sessions/components/RescheduleSessionModal";
 
 import { useMyMentorships } from "../../mentorships/hooks/useMyMentorships";
-import { useScheduleMentorship } from "../../mentorships/hooks/useScheduleMentorship";
-import { useUpdateMentorshipStatus } from "../../mentorships/hooks/useUpdateMentorshipStatus";
+import { useUpcomingSessions } from "../../sessions/hooks/useUpcomingSessions";
+import { useCancelSession } from "../../sessions/hooks/useCancelSession";
+import { useCompleteSession } from "../../sessions/hooks/useCompleteSession";
+import { useMentorMentees } from "../../mentors/hooks/useMentorMentees";
+import { useSessionHistory } from "../../sessions/hooks/useSessionHistory";
 
 import Skeleton from "../../../components/ui/Skeleton";
 
+function isToday(dateString) {
+  const date = new Date(dateString);
+  const today = new Date();
+
+  return (
+    date.getDate() === today.getDate() &&
+    date.getMonth() === today.getMonth() &&
+    date.getFullYear() === today.getFullYear()
+  );
+}
+
+function isTomorrow(dateString) {
+  const date = new Date(dateString);
+
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  return (
+    date.getDate() === tomorrow.getDate() &&
+    date.getMonth() === tomorrow.getMonth() &&
+    date.getFullYear() === tomorrow.getFullYear()
+  );
+}
+
+function isThisWeek(dateString) {
+  const date = new Date(dateString);
+
+  const now = new Date();
+
+  const startOfToday =
+    new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
+
+  const endOfWeek =
+    new Date(startOfToday);
+
+  endOfWeek.setDate(
+    startOfToday.getDate() + 7
+  );
+
+  return (
+    date >= startOfToday &&
+    date <= endOfWeek
+  );
+}
+
+
+
+
 export default function MentorSessionsPage() {
-  const [selectedMentorship, setSelectedMentorship] =
+  const [selectedSession, setSelectedSession] =
     useState(null);
 
   const [scheduleOpen, setScheduleOpen] =
@@ -33,187 +84,150 @@ export default function MentorSessionsPage() {
   const [rescheduleOpen, setRescheduleOpen] =
     useState(false);
 
-  const [rejectOpen, setRejectOpen] =
-    useState(false);
-
   const {
     data,
-    isLoading,
-    isError,
+    isLoading: mentorshipsLoading,
+    isError: mentorshipsError,
   } = useMyMentorships();
+
+  const {
+    data: upcomingSessionsData,
+    isLoading: sessionsLoading,
+    isError: sessionsError,
+  } = useUpcomingSessions();
+
+  const {
+    data: mentorMentees = [],
+  } = useMentorMentees();
 
   const mentorships =
     data?.mentorships || [];
 
-  const scheduleMutation =
-    useScheduleMentorship();
-
-  const statusMutation =
-    useUpdateMentorshipStatus();
-
-  // --------------------------------------------------
-  // FILTERS
-  // --------------------------------------------------
-
-  const pendingRequests = useMemo(() => {
-    return mentorships.filter(
-      (item) => item.status === "PENDING"
-    );
-  }, [mentorships]);
-
   const upcomingSessions = useMemo(() => {
-    return mentorships.filter((item) => {
-      if (
-        item.status !== "ACTIVE" ||
-        !item.startDate
-      ) {
-        return false;
-      }
+    if (!upcomingSessionsData)
+      return [];
 
-      return (
-        new Date(item.startDate) >
-        new Date()
-      );
-    });
-  }, [mentorships]);
+    return [...upcomingSessionsData].sort(
+      (a, b) =>
+        new Date(a.startTime) -
+        new Date(b.startTime)
+    );
+  }, [upcomingSessionsData]);
 
-  const completedSessions = useMemo(() => {
-    return mentorships.filter((item) => {
-      if (
-        item.status !== "ACTIVE" ||
-        !item.endDate
-      ) {
-        return false;
-      }
+  const todaySessions = useMemo(() => {
+    return upcomingSessions.filter(
+      (session) =>
+        isToday(session.startTime)
+    );
+  }, [upcomingSessions]);
 
-      return (
-        new Date(item.endDate) <
-        new Date()
-      );
-    });
-  }, [mentorships]);
+  const tomorrowSessions = useMemo(() => {
+    return upcomingSessions.filter(
+      (session) =>
+        isTomorrow(session.startTime)
+    );
+  }, [upcomingSessions]);
 
-  // --------------------------------------------------
-  // ACTIONS
-  // --------------------------------------------------
+  const thisWeekSessions = useMemo(() => {
+    return upcomingSessions.filter(
+      (session) =>
+        !isToday(session.startTime) &&
+        !isTomorrow(
+          session.startTime
+        ) &&
+        isThisWeek(session.startTime)
+    );
+  }, [upcomingSessions]);
 
-  const handleApprove = (
-    mentorship
-  ) => {
-    setSelectedMentorship(
-      mentorship
+
+  const {
+    data: sessionHistory = [],
+    isLoading: historyLoading,
+    isError: historyError,
+  } = useSessionHistory();
+
+  const completedSessions =
+    sessionHistory.filter(
+      (session) =>
+        session.status === "COMPLETED"
     );
 
-    setScheduleOpen(true);
-  };
-
-  const handleReject = (
-    mentorship
-  ) => {
-    setSelectedMentorship(
-      mentorship
+  const cancelledSessions =
+    sessionHistory.filter(
+      (session) =>
+        session.status === "CANCELLED"
     );
 
-    setRejectOpen(true);
+  const missedSessions =
+    sessionHistory.filter(
+      (session) =>
+        session.status === "MISSED"
+    );
+
+  const totalHours = useMemo(() => {
+    return upcomingSessions.reduce(
+      (acc, session) => {
+        const start = new Date(
+          session.startTime
+        );
+
+        const end = new Date(
+          session.endTime
+        );
+
+        const hours =
+          (end.getTime() -
+            start.getTime()) /
+          (1000 * 60 * 60);
+
+        return acc + hours;
+      },
+      0
+    );
+  }, [upcomingSessions]);
+
+  const cancelMutation =
+    useCancelSession();
+
+  const completeMutation =
+    useCompleteSession();
+
+  const handleReschedule = (
+    session
+  ) => {
+    setSelectedSession(session);
+    setRescheduleOpen(true);
   };
 
-  const confirmReject =
-    async () => {
-      if (!selectedMentorship)
-        return;
+  const handleCancel = (
+    session
+  ) => {
+    cancelMutation.mutate({
+      sessionId: session.id,
+      mentorshipId:
+        session.mentorshipId,
+    });
+  };
 
-      try {
-        await statusMutation.mutateAsync({
-          id: selectedMentorship.id,
-          status: "REJECTED",
-        });
+  const handleComplete = (
+    session
+  ) => {
+    completeMutation.mutate({
+      sessionId: session.id,
+      mentorshipId:
+        session.mentorshipId,
+    });
+  };
 
-        toast.success(
-          "Mentorship request rejected"
-        );
+  const isLoading =
+    mentorshipsLoading ||
+    sessionsLoading ||
+    historyLoading;
 
-        setRejectOpen(false);
-
-        setSelectedMentorship(
-          null
-        );
-      } catch (error) {
-        toast.error(
-          "Failed to reject request"
-        );
-      }
-    };
-
-  const handleSchedule =
-    async (payload) => {
-      if (!selectedMentorship)
-        return;
-
-      try {
-        await scheduleMutation.mutateAsync(
-          {
-            id: selectedMentorship.id,
-            payload,
-          }
-        );
-
-        toast.success(
-          "Session scheduled successfully"
-        );
-
-        setScheduleOpen(false);
-
-        setSelectedMentorship(
-          null
-        );
-      } catch (error) {
-        toast.error(
-          "Failed to schedule session"
-        );
-      }
-    };
-
-  const handleReschedule =
-    (mentorship) => {
-      setSelectedMentorship(
-        mentorship
-      );
-
-      setRescheduleOpen(true);
-    };
-
-  const confirmReschedule =
-    async (payload) => {
-      if (!selectedMentorship)
-        return;
-
-      try {
-        await scheduleMutation.mutateAsync(
-          {
-            id: selectedMentorship.id,
-            payload,
-          }
-        );
-
-        toast.success(
-          "Session rescheduled"
-        );
-
-        setRescheduleOpen(false);
-
-        setSelectedMentorship(
-          null
-        );
-      } catch (error) {
-        toast.error(
-          "Failed to reschedule"
-        );
-      }
-    };
-
-  // --------------------------------------------------
-  // LOADING
-  // --------------------------------------------------
+  const isError =
+    mentorshipsError ||
+    sessionsError ||
+    historyError;
 
   if (isLoading) {
     return (
@@ -234,10 +248,6 @@ export default function MentorSessionsPage() {
     );
   }
 
-  // --------------------------------------------------
-  // ERROR
-  // --------------------------------------------------
-
   if (isError) {
     return (
       <EmptySessionsState
@@ -247,140 +257,112 @@ export default function MentorSessionsPage() {
     );
   }
 
-  // --------------------------------------------------
-  // UI
-  // --------------------------------------------------
-
   return (
-    <div className="space-y-10">
-      {/* HEADER */}
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-          Mentorship Sessions
-        </h1>
+    <div className="space-y-10 pb-10">
+      {/* HERO */}
+      <section className="overflow-hidden rounded-[32px] border border-slate-200 bg-white p-8 shadow-sm">
+        <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <div className="inline-flex items-center rounded-full border border-indigo-100 bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700">
+              Mentor Workspace
+            </div>
 
-        <p className="mt-2 text-slate-500">
-          Manage mentorship
-          requests, schedule
-          meetings, and track
-          mentorship activity.
-        </p>
-      </div>
+            <h1 className="mt-4 text-4xl font-bold tracking-tight text-slate-900">
+              Manage your mentorship
+              sessions
+            </h1>
+
+            <p className="mt-3 max-w-2xl text-base leading-7 text-slate-500">
+              Track upcoming
+              mentorship meetings,
+              reschedule sessions,
+              manage mentoring
+              activity, and stay
+              organized throughout
+              the week.
+            </p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() =>
+              setScheduleOpen(true)
+            }
+            className="inline-flex items-center justify-center rounded-2xl bg-indigo-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-indigo-500"
+          >
+            Schedule Session
+          </button>
+        </div>
+      </section>
 
       {/* STATS */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <SessionStatsCard
-          title="Pending Requests"
-          value={
-            pendingRequests.length
-          }
-          icon={Clock3}
-        />
-
-        <SessionStatsCard
-          title="Upcoming Sessions"
+          label="Upcoming Sessions"
           value={
             upcomingSessions.length
           }
+          helper="Scheduled mentorship meetings"
           icon={CalendarDays}
         />
 
         <SessionStatsCard
-          title="Completed Sessions"
-          value={
-            completedSessions.length
-          }
+          label="Sessions Today"
+          value={todaySessions.length}
+          helper="Meetings happening today"
+          icon={Clock3}
+        />
+
+        <SessionStatsCard
+          label="Mentorship Hours"
+          value={`${Math.round(
+            totalHours
+          )}h`}
+          helper="Upcoming booked session time"
           icon={CheckCircle2}
         />
 
         <SessionStatsCard
-          title="Active Mentees"
-          value={
-            mentorships.filter(
-              (item) =>
-                item.status ===
-                "ACTIVE"
-            ).length
-          }
+          label="Active Mentees"
+          value={mentorMentees.length}
+          helper="Currently active mentees"
           icon={Users}
         />
-      </div>
-
-      {/* PENDING REQUESTS */}
-      <section className="space-y-5">
-        <div>
-          <h2 className="text-xl font-semibold text-slate-900">
-            Pending Requests
-          </h2>
-
-          <p className="mt-1 text-sm text-slate-500">
-            Approve or reject
-            mentorship requests.
-          </p>
-        </div>
-
-        {pendingRequests.length >
-        0 ? (
-          <div className="grid gap-5">
-            {pendingRequests.map(
-              (mentorship) => (
-                <MentorshipRequestCard
-                  key={
-                    mentorship.id
-                  }
-                  mentorship={
-                    mentorship
-                  }
-                  onApprove={() =>
-                    handleApprove(
-                      mentorship
-                    )
-                  }
-                  onReject={() =>
-                    handleReject(
-                      mentorship
-                    )
-                  }
-                />
-              )
-            )}
-          </div>
-        ) : (
-          <EmptySessionsState
-            title="No pending requests"
-            description="New mentorship requests will appear here."
-          />
-        )}
       </section>
 
-      {/* UPCOMING SESSIONS */}
+      {/* TODAY */}
       <section className="space-y-5">
         <div>
-          <h2 className="text-xl font-semibold text-slate-900">
-            Upcoming Sessions
+          <h2 className="text-2xl font-semibold text-slate-900">
+            Today
           </h2>
 
           <p className="mt-1 text-sm text-slate-500">
             Your scheduled
-            mentorship meetings.
+            sessions for today.
           </p>
         </div>
 
-        {upcomingSessions.length >
-        0 ? (
+        {todaySessions.length >
+          0 ? (
           <div className="grid gap-5">
-            {upcomingSessions.map(
-              (mentorship) => (
+            {todaySessions.map(
+              (session) => (
                 <SessionCard
-                  key={
-                    mentorship.id
-                  }
-                  mentorship={
-                    mentorship
-                  }
+                  key={session.id}
+                  session={session}
+                  userRole="MENTOR"
                   onReschedule={() =>
                     handleReschedule(
-                      mentorship
+                      session
+                    )
+                  }
+                  onCancel={() =>
+                    handleCancel(session)
+                  }
+                  onComplete={() =>
+                    handleComplete(
+                      session
                     )
                   }
                 />
@@ -389,8 +371,102 @@ export default function MentorSessionsPage() {
           </div>
         ) : (
           <EmptySessionsState
-            title="No upcoming sessions"
-            description="Scheduled sessions will appear here."
+            title="No sessions today"
+            description="Your upcoming sessions for today will appear here."
+          />
+        )}
+      </section>
+
+      {/* TOMORROW */}
+      <section className="space-y-5">
+        <div>
+          <h2 className="text-2xl font-semibold text-slate-900">
+            Tomorrow
+          </h2>
+
+          <p className="mt-1 text-sm text-slate-500">
+            Sessions planned for
+            tomorrow.
+          </p>
+        </div>
+
+        {tomorrowSessions.length >
+          0 ? (
+          <div className="grid gap-5">
+            {tomorrowSessions.map(
+              (session) => (
+                <SessionCard
+                  key={session.id}
+                  session={session}
+                  userRole="MENTOR"
+                  onReschedule={() =>
+                    handleReschedule(
+                      session
+                    )
+                  }
+                  onCancel={() =>
+                    handleCancel(session)
+                  }
+                  onComplete={() =>
+                    handleComplete(
+                      session
+                    )
+                  }
+                />
+              )
+            )}
+          </div>
+        ) : (
+          <EmptySessionsState
+            title="No sessions tomorrow"
+            description="Upcoming mentorship meetings for tomorrow will appear here."
+          />
+        )}
+      </section>
+
+      {/* THIS WEEK */}
+      <section className="space-y-5">
+        <div>
+          <h2 className="text-2xl font-semibold text-slate-900">
+            This Week
+          </h2>
+
+          <p className="mt-1 text-sm text-slate-500">
+            Upcoming mentorship
+            activity this week.
+          </p>
+        </div>
+
+        {thisWeekSessions.length >
+          0 ? (
+          <div className="grid gap-5">
+            {thisWeekSessions.map(
+              (session) => (
+                <SessionCard
+                  key={session.id}
+                  session={session}
+                  userRole="MENTOR"
+                  onReschedule={() =>
+                    handleReschedule(
+                      session
+                    )
+                  }
+                  onCancel={() =>
+                    handleCancel(session)
+                  }
+                  onComplete={() =>
+                    handleComplete(
+                      session
+                    )
+                  }
+                />
+              )
+            )}
+          </div>
+        ) : (
+          <EmptySessionsState
+            title="No sessions this week"
+            description="Your remaining weekly schedule will appear here."
           />
         )}
       </section>
@@ -398,29 +474,25 @@ export default function MentorSessionsPage() {
       {/* COMPLETED */}
       <section className="space-y-5">
         <div>
-          <h2 className="text-xl font-semibold text-slate-900">
+          <h2 className="text-2xl font-semibold text-slate-900">
             Completed Sessions
           </h2>
 
           <p className="mt-1 text-sm text-slate-500">
-            Previously completed
-            mentorship meetings.
+            Sessions that were
+            completed successfully.
           </p>
         </div>
 
         {completedSessions.length >
-        0 ? (
+          0 ? (
           <div className="grid gap-5">
             {completedSessions.map(
-              (mentorship) => (
+              (session) => (
                 <SessionCard
-                  key={
-                    mentorship.id
-                  }
-                  mentorship={
-                    mentorship
-                  }
-                  completed
+                  key={session.id}
+                  session={session}
+                  userRole="MENTOR"
                 />
               )
             )}
@@ -428,66 +500,29 @@ export default function MentorSessionsPage() {
         ) : (
           <EmptySessionsState
             title="No completed sessions"
-            description="Completed sessions will appear here."
+            description="Completed mentorship sessions will appear here."
           />
         )}
       </section>
 
-      {/* MODALS */}
-
       <ScheduleSessionModal
-        open={scheduleOpen}
+        isOpen={scheduleOpen}
         onClose={() => {
           setScheduleOpen(false);
-
-          setSelectedMentorship(
-            null
-          );
         }}
-        mentorship={
-          selectedMentorship
-        }
-        onConfirm={
-          handleSchedule
-        }
-        isLoading={
-          scheduleMutation.isPending
-        }
+        mentorships={mentorMentees}
       />
 
       <RescheduleSessionModal
-        open={rescheduleOpen}
+        isOpen={rescheduleOpen}
         onClose={() => {
           setRescheduleOpen(false);
 
-          setSelectedMentorship(
+          setSelectedSession(
             null
           );
         }}
-        mentorship={
-          selectedMentorship
-        }
-        onConfirm={
-          confirmReschedule
-        }
-        isLoading={
-          scheduleMutation.isPending
-        }
-      />
-
-      <RejectRequestModal
-        open={rejectOpen}
-        onClose={() => {
-          setRejectOpen(false);
-
-          setSelectedMentorship(
-            null
-          );
-        }}
-        onConfirm={confirmReject}
-        isLoading={
-          statusMutation.isPending
-        }
+        session={selectedSession}
       />
     </div>
   );

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-
+import { useNavigate } from "react-router-dom";
 import EmptyState from "../../../components/ui/EmptyState";
 
 import { useMyProfile } from "../../users/hooks/useMyProfile";
@@ -12,6 +12,7 @@ import ProfileSection from "../components/ProfileSection";
 import ProfileSkeleton from "../components/ProfileSkeleton";
 
 export default function MenteeProfilePage() {
+  const navigate = useNavigate();
   const {
     data: profile,
     isLoading,
@@ -130,7 +131,7 @@ export default function MenteeProfilePage() {
         />
       </section>
 
-      <ProfileSection
+      {/* <ProfileSection
         title="Connected services"
         description="Manage your connected tools and integrations."
       >
@@ -161,7 +162,7 @@ export default function MenteeProfilePage() {
             Calendar sync is managed by your mentor.
           </div>
         )}
-      </ProfileSection>
+      </ProfileSection> */}
 
       <ProfileSection
         title="Recent activity"
@@ -178,14 +179,15 @@ export default function MenteeProfilePage() {
         )}
       </ProfileSection>
 
-      <ProfileSection title="Security">
+      {/* <ProfileSection title="Security">
         <button
           type="button"
+          onClick={() => navigate("/forgot-password")}
           className="rounded-2xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700"
         >
           Change Password
         </button>
-      </ProfileSection>
+      </ProfileSection> */}
     </div>
   );
 }

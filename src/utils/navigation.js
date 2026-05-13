@@ -21,11 +21,11 @@ export const menteeNavItems = [
     icon: Users,
   },
 
-  {
-    title: "Mentorships",
-    path: "/mentee/mentorships",
-    icon: BookOpen,
-  },
+  // {
+  //   title: "Mentorships",
+  //   path: "/mentee/mentorships",
+  //   icon: BookOpen,
+  // },
 
   {
     title: "Chat",

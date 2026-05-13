@@ -1,3 +1,8 @@
+import {
+  CalendarDays,
+  ArrowUpRight,
+} from "lucide-react";
+
 import { Link } from "react-router-dom";
 
 const formatDate = (value) => {
@@ -6,66 +11,99 @@ const formatDate = (value) => {
   }
 
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) {
+
+  if (
+    Number.isNaN(date.getTime())
+  ) {
     return "Not scheduled";
   }
 
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+  return date.toLocaleDateString(
+    "en-US",
+    {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    }
+  );
 };
 
-export default function ActiveMenteeCard({ mentorship }) {
-  const mentee = mentorship?.mentee;
+export default function ActiveMenteeCard({
+  mentorship,
+}) {
+  const mentee =
+    mentorship?.mentee;
+
+  const plan =
+    mentorship?.mentorPlan;
 
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div className="group overflow-hidden rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm transition duration-200 hover:-translate-y-1 hover:border-indigo-100 hover:shadow-lg">
+      {/* TOP */}
       <div className="flex items-start justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-sm font-semibold text-slate-700">
-            {mentee?.name?.charAt(0) || "M"}
+        <div className="flex items-center gap-4">
+          {/* AVATAR */}
+          <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-100 to-indigo-50 text-base font-bold text-indigo-700">
+            {mentee?.avatar ? (
+              <img
+                src={mentee.avatar}
+                alt={mentee.name}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              mentee?.name?.charAt(
+                0
+              ) || "M"
+            )}
           </div>
+
+          {/* INFO */}
           <div>
-            <p className="text-sm font-semibold text-slate-900">
-              {mentee?.name || "Mentee"}
+            <p className="text-base font-semibold text-slate-900">
+              {mentee?.name ||
+                "Mentee"}
             </p>
-            <p className="text-xs text-slate-500">
-              {mentorship?.mentorPlan?.title || "Mentorship plan"}
+
+            <p className="mt-1 text-sm text-slate-500">
+              {plan?.title ||
+                "Mentorship Plan"}
             </p>
           </div>
         </div>
-      </div>
 
-      <div className="mt-4 grid gap-2 text-sm text-slate-600">
-        <div className="flex items-center justify-between">
-          <span>Started</span>
-          <span className="font-medium text-slate-900">
-            {formatDate(mentorship?.createdAt)}
-          </span>
-        </div>
-        <div className="flex items-center justify-between">
-          <span>Next session</span>
-          <span className="font-medium text-slate-900">
-            {formatDate(mentorship?.startDate)}
-          </span>
+        {/* STATUS */}
+        <div className="rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+          Active
         </div>
       </div>
 
-      <div className="mt-5 flex flex-wrap gap-2">
-        <Link
-          to="/mentor/chat"
-          className="rounded-2xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-indigo-500"
-        >
-          Open Chat
-        </Link>
-        <Link
-          to="/mentor/sessions"
-          className="rounded-2xl border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-700 transition hover:border-indigo-200 hover:text-indigo-600"
-        >
-          View Mentorship
-        </Link>
+      {/* DETAILS */}
+      <div className="mt-6 space-y-3 rounded-2xl bg-slate-50 p-4">
+        <div className="flex items-center justify-between text-sm">
+          <div className="flex items-center gap-2 text-slate-500">
+            <CalendarDays className="h-4 w-4" />
+            Started
+          </div>
+
+          <span className="font-medium text-slate-900">
+            {formatDate(
+              mentorship?.createdAt
+            )}
+          </span>
+        </div>
+
+        <div className="flex items-center justify-between text-sm">
+          <div className="flex items-center gap-2 text-slate-500">
+            <CalendarDays className="h-4 w-4" />
+            Ends
+          </div>
+
+          <span className="font-medium text-slate-900">
+            {formatDate(
+              mentorship?.endDate
+            )}
+          </span>
+        </div>
       </div>
     </div>
   );

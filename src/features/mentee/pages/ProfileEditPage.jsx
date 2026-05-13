@@ -125,7 +125,7 @@ export default function ProfileEditPage() {
         />
       </ProfileSection>
 
-      <ProfileSection
+      {/* <ProfileSection
         title="Google Calendar"
         description="Calendar connections are managed by mentors."
       >
@@ -168,16 +168,16 @@ export default function ProfileEditPage() {
             Calendar sync is managed by your mentor.
           </p>
         )}
-      </ProfileSection>
+      </ProfileSection> */}
 
-      <ProfileSection title="Security">
+      {/* <ProfileSection title="Security">
         <button
           type="button"
           className="rounded-2xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700"
         >
           Change Password
         </button>
-      </ProfileSection>
+      </ProfileSection> */}
 
       <div className="flex flex-wrap items-center justify-end gap-3">
         <button

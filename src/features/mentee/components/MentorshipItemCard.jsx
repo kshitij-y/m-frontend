@@ -85,7 +85,7 @@ export default function MentorshipItemCard({ mentorship }) {
       <div className="mt-4 grid gap-3 text-sm text-slate-600 md:grid-cols-2">
         <div>
           <p className="text-xs uppercase tracking-wide text-slate-400">
-            Started
+            Start date
           </p>
           <p className="mt-1 font-semibold text-slate-900">
             {formatDate(mentorship?.createdAt)}
@@ -101,10 +101,10 @@ export default function MentorshipItemCard({ mentorship }) {
         </div>
         <div>
           <p className="text-xs uppercase tracking-wide text-slate-400">
-            Next session
+            END DATE
           </p>
           <p className="mt-1 font-semibold text-slate-900">
-            {formatDate(mentorship?.startDate)}
+            {formatDate(mentorship?.endDate)}
           </p>
         </div>
         <div>
