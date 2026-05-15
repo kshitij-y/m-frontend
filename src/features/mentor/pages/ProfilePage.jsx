@@ -142,7 +142,7 @@ export default function MentorProfilePage() {
         />
       </section>
 
-      <MentorProfileSection
+      {/* <MentorProfileSection
         title="Google Calendar"
         description="Manage your calendar connection for scheduling."
       >
@@ -165,16 +165,16 @@ export default function MentorProfilePage() {
               : "Connect calendar"}
           </button>
         </div>
-      </MentorProfileSection>
+      </MentorProfileSection> */}
 
-      <MentorProfileSection title="Security">
+      {/* <MentorProfileSection title="Security">
         <button
           type="button"
           className="rounded-2xl border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700"
         >
           Change Password
         </button>
-      </MentorProfileSection>
+      </MentorProfileSection> */}
     </div>
   );
 }

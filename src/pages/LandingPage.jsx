@@ -15,30 +15,6 @@ export default function LandingPage() {
           <div className="flex items-center gap-3">
             <Logo />
           </div>
-
-          {/* <div className="hidden items-center gap-8 md:flex">
-            <a
-              href="#features"
-              className="text-sm font-medium text-slate-600 transition hover:text-slate-900"
-            >
-              Features
-            </a>
-
-            <a
-              href="#how-it-works"
-              className="text-sm font-medium text-slate-600 transition hover:text-slate-900"
-            >
-              How it works
-            </a>
-
-            <a
-              href="#mentors"
-              className="text-sm font-medium text-slate-600 transition hover:text-slate-900"
-            >
-              Mentors
-            </a>
-          </div> */}
-
           <div className="flex items-center gap-3">
             <a
               href="/login"

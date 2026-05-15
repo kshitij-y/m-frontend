@@ -1,4 +1,3 @@
-// src/features/mentors/api/expertise.js
 
 import { request } from "../../../api/request";
 

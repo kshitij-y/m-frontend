@@ -340,7 +340,7 @@ export default function MentorProfileEditPage() {
         />
       </MentorProfileSection>
 
-      <MentorProfileSection
+      {/* <MentorProfileSection
         title="Google Calendar"
         description="Connect your calendar for scheduling support."
       >
@@ -386,7 +386,7 @@ export default function MentorProfileEditPage() {
         >
           Change Password
         </button>
-      </MentorProfileSection>
+      </MentorProfileSection> */}
 
       <div className="flex flex-wrap items-center justify-end gap-3">
         <button

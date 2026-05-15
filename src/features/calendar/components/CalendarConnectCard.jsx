@@ -62,10 +62,6 @@ export default function CalendarConnectCard() {
     <div className="rounded-[32px] border border-slate-200/70 bg-white p-8 shadow-xl shadow-slate-200/40">
       {/* TOP */}
       <div className="space-y-5">
-        {/* <div className="inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-indigo-50 px-4 py-2 text-sm font-medium text-indigo-700">
-          <span className="h-2 w-2 rounded-full bg-indigo-600" />
-          Optional Integration
-        </div> */}
 
         <div>
           <h3 className="text-3xl font-bold tracking-tight text-slate-900">
